@@ -1,7 +1,7 @@
 // DARK EPIC DUNGEONS — service worker mínimo e seguro contra cache velho:
 // navegação/index = REDE PRIMEIRO (nunca fica preso em versão antiga);
 // assets com hash do Vite = cache primeiro (são imutáveis por nome).
-const CACHE = "ded-web-v1.1.0";
+const CACHE = "ded-web-v1.1.1";
 
 self.addEventListener("install", () => self.skipWaiting());
 
