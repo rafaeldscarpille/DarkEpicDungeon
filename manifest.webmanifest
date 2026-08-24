@@ -1,0 +1,17 @@
+{
+  "name": "DARK EPIC DUNGEONS",
+  "short_name": "DARK EPIC",
+  "description": "Dark fantasy dungeon crawler RPG com campanha, quatro classes e modo Endless procedural.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0a0806",
+  "theme_color": "#0a0806",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

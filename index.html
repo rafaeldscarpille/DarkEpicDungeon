@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <title>DARK EPIC DUNGEONS</title>
+  <meta name="theme-color" content="#0a0806" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0a0806;
+      overflow: hidden;
+    }
+    #game {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #game canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    /* Portrait em dispositivos touch: pedir landscape (jogo é 16:9).
+       Exibição controlada por JS (main.js pausa o loop); classe .visible liga. */
+    #rotate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: radial-gradient(ellipse at center, #171009 0%, #0a0806 70%);
+      color: #c9a24a;
+      font-family: Georgia, 'Times New Roman', serif;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    #rotate-overlay.visible { display: flex; }
+    #rotate-overlay .phone {
+      width: 46px; height: 78px;
+      border: 3px solid #c9a24a; border-radius: 8px;
+      position: relative;
+      animation: ded-rotate 2.6s ease-in-out infinite;
+      box-shadow: 0 0 24px rgba(201, 162, 74, 0.25);
+    }
+    #rotate-overlay .phone::after {
+      content: ""; position: absolute; left: 50%; bottom: 5px;
+      width: 12px; height: 3px; margin-left: -6px;
+      background: #c9a24a; border-radius: 2px;
+    }
+    #rotate-overlay .title {
+      font-size: 22px; font-weight: bold; letter-spacing: 3px;
+      color: #e8d9a0; text-shadow: 0 0 14px rgba(201, 162, 74, 0.5);
+    }
+    #rotate-overlay .msg { font-size: 17px; font-weight: bold; letter-spacing: 2px; }
+    #rotate-overlay .sub { font-size: 12px; color: #8a7f66; font-family: 'Courier New', monospace; }
+    @keyframes ded-rotate {
+      0%, 45% { transform: rotate(0deg); }
+      70%, 100% { transform: rotate(90deg); }
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-DoNSiU5u.js"></script>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="rotate-overlay">
+    <div class="phone"><div class="screen"></div></div>
+    <div class="title">DARK EPIC DUNGEONS</div>
+    <div class="msg">VIRE O DISPOSITIVO</div>
+    <div class="sub">Este jogo foi projetado para jogar na horizontal.</div>
+  </div>
+</body>
+</html>
