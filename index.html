@@ -25,10 +25,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      touch-action: none; /* toque nunca vira scroll/zoom do navegador */
     }
     #game canvas {
       image-rendering: pixelated;
       image-rendering: crisp-edges;
+      touch-action: none;
     }
     /* Portrait em dispositivos touch: pedir landscape (jogo é 16:9).
        Exibição controlada por JS (main.js pausa o loop); classe .visible liga. */
@@ -71,7 +73,7 @@
       70%, 100% { transform: rotate(90deg); }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-E-4r8qpH.js"></script>
+  <script type="module" crossorigin src="./assets/index-BfnV4R9L.js"></script>
 </head>
 <body>
   <div id="game"></div>
