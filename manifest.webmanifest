@@ -1,6 +1,6 @@
 {
   "name": "DEPTHGATE",
-  "short_name": "DARK EPIC",
+  "short_name": "DEPTHGATE",
   "description": "Dark fantasy dungeon crawler RPG com campanha, quatro classes e modo Endless procedural.",
   "start_url": "./index.html",
   "scope": "./",
