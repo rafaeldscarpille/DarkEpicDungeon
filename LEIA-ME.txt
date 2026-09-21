@@ -1,0 +1,26 @@
+DEPTHGATE — PATCH v20 (arquivos alterados)
+===========================================
+
+REVITALIZAÇÃO VISUAL — INIMIGOS DAS CATACUMBAS (arte gerada via PixelLab)
+
+O que mudou desde a v19:
+- 5 inimigos das Catacumbas com sprites completamente novos, em
+  qualidade muito superior à arte procedural anterior:
+    · Esqueleto           (skeleton-ai.png)
+    · Esqueleto Guerreiro (skeleton-warrior-ai.png) — espadão de duas
+      mãos, armadura de placas e capa esfarrapada
+    · Esqueleto Arqueiro  (skeleton-archer-ai.png) — arco, capuz de
+      couro e aljava nas costas
+    · Esqueleto Mago      (skeleton-mage-ai.png) — túnica com runas e
+      cajado verde brilhante
+    · Fantasma            (ghost-ai.png) — espectro azul etéreo com
+      cauda esvoaçante
+- Cada inimigo mantém as 28 frames de animação do padrão do jogo
+  (idle, andar, correr, alerta, ataque em 3 fases, dano e morte).
+- Zero mudança de gameplay: mesmas hitboxes, alcances e escalas de
+  mundo (TEX_SCALE recalculado por sprite para preservar o tamanho).
+- Bundle novo (index-DBRKqjQw.js) com as escalas e o carregamento
+  das novas folhas de sprites.
+
+Como aplicar: copie o conteúdo por cima do jogo publicado (sobre a
+v19), substituindo os existentes. É só o delta — não apague o resto.
