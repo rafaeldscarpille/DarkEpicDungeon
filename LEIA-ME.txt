@@ -1,25 +1,22 @@
-DEPTHGATE — PATCH v21 (arquivos alterados)
+DEPTHGATE — PATCH v22 (arquivos alterados)
 ===========================================
 
-REVITALIZAÇÃO DOS INIMIGOS DAS CATACUMBAS + CORREÇÃO DE ANIMAÇÃO
-(substitui e consolida o patch v20)
+ESCUDO EM TODOS OS CONTROLES + ÍCONES NO TOUCH + LADINO COM DUAS ADAGAS
 
-O que mudou desde a v19:
-- 5 inimigos das Catacumbas com sprites completamente novos (via PixelLab):
-    · Esqueleto           (skeleton-ai.png)
-    · Esqueleto Guerreiro (skeleton-warrior-ai.png) — espadão, armadura e capa
-    · Esqueleto Arqueiro  (skeleton-archer-ai.png) — arco, capuz e aljava
-    · Esqueleto Mago      (skeleton-mage-ai.png) — túnica com runas e cajado verde
-    · Fantasma            (ghost-ai.png) — espectro azul etéreo
-- Movimentação ORGÂNICA: as folhas foram remontadas preservando o balanço
-  original de cada ciclo (a versão anterior recentralizava frame a frame e
-  deixava o movimento "travado"), e a corrida do Esqueleto Guerreiro foi
-  re-sintetizada com bounce de passada e inclinação de corrida.
-- Cada inimigo mantém as 28 frames do padrão do jogo (idle, andar, correr,
-  alerta, ataque em 3 fases, dano e morte). Zero mudança de gameplay:
-  mesmas hitboxes, alcances e escalas de mundo.
-- Service worker atualizado (cache ded-web-v1.5.1) para garantir que os
-  sprites corrigidos substituam os antigos em quem já tinha o jogo em cache.
+O que mudou desde a v21 (tudo no bundle — sem assets novos):
+- BLOQUEIO (segurar a guarda) agora existe em TODOS os dispositivos:
+    · Teclado: tecla C (agora REMAPEÁVEL no painel de Controles)
+    · Gamepad: R3 ou D-pad baixo (também remapeável)
+    · Touch: novo botão ESCUDO (segurar bloqueia) — aparece SOMENTE
+      quando o herói tem escudo equipado na mão secundária
+- Painel de Controles ganhou a linha "BLOQUEIO" (teclado + gamepad).
+- BOTÕES TOUCH COM ÍCONES: em vez das letras A/B/X/Y, cada botão mostra
+  o ícone da ação — espada (ataque), ">>" (dash), escudo (bloqueio) e o
+  ícone real de cada habilidade equipada (muda conforme a classe).
+- LADINO COM DUAS ADAGAS: equipar uma segunda adaga com uma adaga já em
+  mãos envia a nova para a mão secundária (dano e crítico somam; a
+  velocidade de ataque continua a da arma principal). Vale também para
+  o Assassino das Sombras. Escudos continuam proibidos para a classe.
 
-Como aplicar: copie o conteúdo por cima do jogo publicado (sobre a v19 ou
-v20), substituindo os existentes. É só o delta — não apague o resto.
+Como aplicar: copie o conteúdo por cima do jogo publicado (sobre a v21),
+substituindo os existentes. É só o delta — não apague o resto.
