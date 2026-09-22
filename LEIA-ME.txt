@@ -1,26 +1,25 @@
-DEPTHGATE — PATCH v20 (arquivos alterados)
+DEPTHGATE — PATCH v21 (arquivos alterados)
 ===========================================
 
-REVITALIZAÇÃO VISUAL — INIMIGOS DAS CATACUMBAS (arte gerada via PixelLab)
+REVITALIZAÇÃO DOS INIMIGOS DAS CATACUMBAS + CORREÇÃO DE ANIMAÇÃO
+(substitui e consolida o patch v20)
 
 O que mudou desde a v19:
-- 5 inimigos das Catacumbas com sprites completamente novos, em
-  qualidade muito superior à arte procedural anterior:
+- 5 inimigos das Catacumbas com sprites completamente novos (via PixelLab):
     · Esqueleto           (skeleton-ai.png)
-    · Esqueleto Guerreiro (skeleton-warrior-ai.png) — espadão de duas
-      mãos, armadura de placas e capa esfarrapada
-    · Esqueleto Arqueiro  (skeleton-archer-ai.png) — arco, capuz de
-      couro e aljava nas costas
-    · Esqueleto Mago      (skeleton-mage-ai.png) — túnica com runas e
-      cajado verde brilhante
-    · Fantasma            (ghost-ai.png) — espectro azul etéreo com
-      cauda esvoaçante
-- Cada inimigo mantém as 28 frames de animação do padrão do jogo
-  (idle, andar, correr, alerta, ataque em 3 fases, dano e morte).
-- Zero mudança de gameplay: mesmas hitboxes, alcances e escalas de
-  mundo (TEX_SCALE recalculado por sprite para preservar o tamanho).
-- Bundle novo (index-DBRKqjQw.js) com as escalas e o carregamento
-  das novas folhas de sprites.
+    · Esqueleto Guerreiro (skeleton-warrior-ai.png) — espadão, armadura e capa
+    · Esqueleto Arqueiro  (skeleton-archer-ai.png) — arco, capuz e aljava
+    · Esqueleto Mago      (skeleton-mage-ai.png) — túnica com runas e cajado verde
+    · Fantasma            (ghost-ai.png) — espectro azul etéreo
+- Movimentação ORGÂNICA: as folhas foram remontadas preservando o balanço
+  original de cada ciclo (a versão anterior recentralizava frame a frame e
+  deixava o movimento "travado"), e a corrida do Esqueleto Guerreiro foi
+  re-sintetizada com bounce de passada e inclinação de corrida.
+- Cada inimigo mantém as 28 frames do padrão do jogo (idle, andar, correr,
+  alerta, ataque em 3 fases, dano e morte). Zero mudança de gameplay:
+  mesmas hitboxes, alcances e escalas de mundo.
+- Service worker atualizado (cache ded-web-v1.5.1) para garantir que os
+  sprites corrigidos substituam os antigos em quem já tinha o jogo em cache.
 
-Como aplicar: copie o conteúdo por cima do jogo publicado (sobre a
-v19), substituindo os existentes. É só o delta — não apague o resto.
+Como aplicar: copie o conteúdo por cima do jogo publicado (sobre a v19 ou
+v20), substituindo os existentes. É só o delta — não apague o resto.
