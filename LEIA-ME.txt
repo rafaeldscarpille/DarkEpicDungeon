@@ -6,10 +6,10 @@ publicado (que já precisa ter as atualizações anteriores — pasta
 DEPTHGATE-WEB-ATUALIZACOES ou DEPTHGATE-WEB-COMPLETO).
 
 CONTEÚDO DE HOJE — NOVO SISTEMA: DIMENSÕES DE TRAVESSIA
-· Ao usar um portal da campanha, existe uma chance rara (40%, com
-  cooldown de 1 nível) de ele desviar para uma DIMENSÃO DE TRAVESSIA:
+· TODOS os portais da campanha levam a uma DIMENSÃO DE TRAVESSIA:
   fase especial 2D de plataforma com câmera lateral, gravidade, coyote
   time, jump buffer e salto de altura variável (segurar = mais alto).
+  Os tipos se alternam entre um portal e outro.
 · 2 tipos, ambos construídos com os packs fornecidos:
   - BURGO SOMBRIO (pack "GothicVania Town"): cidade gótica ao entardecer,
     casas/igreja no fundo, chão de pedra, lampiões, barris, caixas,
