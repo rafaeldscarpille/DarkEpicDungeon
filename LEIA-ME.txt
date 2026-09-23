@@ -1,87 +1,49 @@
-DEPTHGATE — PATCH v23 (arquivos atualizados e novos — CONSOLIDADO)
-===================================================================
+DEPTHGATE — ATUALIZAÇÃO DE HOJE (23/09) — DIMENSÕES DE TRAVESSIA
+=================================================================
 
-Reúne TODAS as novidades recentes num único delta. Pode ser aplicado por
-cima de QUALQUER versão anterior (v19, v20, v21 ou v22).
+Apenas os arquivos NOVOS/ATUALIZADOS de hoje. Aplique por cima do jogo
+publicado (que já precisa ter as atualizações anteriores — pasta
+DEPTHGATE-WEB-ATUALIZACOES ou DEPTHGATE-WEB-COMPLETO).
 
-CONTEÚDO:
-0-C. DIMENSÕES DE TRAVESSIA (NOVO SISTEMA):
-   · Ao usar um portal da campanha, existe uma chance rara (40%, com
-     cooldown de 1 nível entre ocorrências) de ele desviar para uma
-     DIMENSÃO DE TRAVESSIA: fase especial 2D de plataforma/exploração
-     com câmera lateral, gravidade, coyote time, jump buffer e salto de
-     altura variável (segurar = mais alto).
-   · 2 tipos, construídos com os packs fornecidos: BURGO SOMBRIO
-     ("GothicVania Town": cidade gótica, lampiões, casas, poço, carroça)
-     e BOSQUE DA MEIA-NOITE ("Final": lua, igreja, lápides, plataformas
-     de grama e passarelas de pedra). Arquitetura pronta para mais tipos.
-   · Geração procedural por seções (START → PLATAFORMAS → ARMADILHAS →
-     EXPLORAÇÃO → VERTICAL → DESAFIO → RECOMPENSA → SAÍDA) com validação
-     física: nenhum salto impossível (1000 gerações testadas, 0 falhas).
-   · Armadilhas: espinhos, plataformas que desabam, plataformas móveis,
-     atiradores com telegraph. Poucos inimigos, adaptados à lateral
-     (patrulha, voador, sentinela). Segredos com baús + moedas.
-   · Recompensa final proporcional à profundidade; cair no abismo custa
-     1 HP e devolve ao último checkpoint; morrer devolve à campanha sem
-     recompensa. XP/ouro/inventário/save 100% preservados no retorno.
-   · Primeira entrada mostra introdução narrativa (uma vez por campanha,
-     persistida no save). Textos em PT/EN/ES.
-   · Controles: teclado (A/D + W/↑ pular + ESPAÇO ataque + SHIFT dash +
-     Q poção), gamepad (analógico + A pular + X/RT ataque) e layout touch
-     próprio de plataforma (◀ ▶ + botão de pulo grande).
-0-B. ABERTURA CINEMATOGRÁFICA REFEITA (pack "Free Pixel Art Forest"):
-   · O plano do vale e a caminhada do herói agora usam 12 camadas REAIS
-     de parallax (céu, dossel, feixes de luz, troncos e mata) em vez do
-     cenário procedural (assets/pixel-art/cinematic/forest-layer-*.png).
-   · Herói ALINHADO COM A SOMBRA: a origem do sprite agora fica nos pés
-     (footY do layout) — antes ele "flutuava" acima da elipse de sombra.
-   · A silhueta da ameaça agora é o DRAGÃO ANCIÃO com olhos em brasa
-     (coerente com a campanha nova), no lugar do Ent.
-0-A. CENÁRIO DA FLORESTA REFEITO (packs "Pixel Art Top Down Basic" +
-   "Pixel Crawler"): chão de grama novo com variações e sombras
-   (biome-forest-v2.png) e 22 props novos — árvores verdes/pinheiro/
-   carvalho, 3 árvores de outono, 3 árvores secas, 2 mega-árvores da
-   arena do boss, 5 pedras com musgo, arbustos e flores — com sombras
-   sintetizadas e mesmas chaves/colisões de antes
-   (assets/pixel-art/forest/*-v2.png).
-0. NOVA CAMPANHA — O DRAGÃO RECORRENTE (substitui o Ent Ancião):
-   · O DRAGÃO FINAL agora aparece já no Coração da Floresta, com intro
-     cinematográfica (silêncio → sombra alada cruza a arena → rugido →
-     pouso) e uma batalha difícil em 3 fases (terrestre → fogo → voo).
-   · Ao ser ferido o bastante, ele NÃO morre: interrompe o combate,
-     ergue-se, abre as asas e FOGE voando — "Você o feriu... mas não o
-     derrotou." A campanha continua com recompensa intermediária.
-   · O estado do dragão (ferido/fugiu/morto) persiste no save.
-   · Na Fortaleza dos Dragões ele RETORNA para o confronto verdadeiro:
-     "ELE SE LEMBRA DE VOCÊ. NÃO HÁ FUGA DESTA VEZ." — mais agressivo,
-     fases antecipadas, voo e meteoros desde cedo. Só aqui ele pode
-     morrer de verdade, com a recompensa final e a conclusão da campanha.
-   · Textos em PT/EN/ES.
-1. INIMIGOS DAS CATACUMBAS REVITALIZADOS (5 sprites novos, gerados por IA,
-   com movimentação orgânica): Esqueleto, Esqueleto Guerreiro, Esqueleto
-   Arqueiro, Esqueleto Mago e Fantasma — 28 frames de animação cada
-   (assets/pixel-art/enemies/*-ai.png).
-2. DRAGÃO ANCIÃO (boss final) COM SPRITES NOVOS do pack x256: idle,
-   caminhada, ataque, dano, rugido de fase, morte em 5 estágios e sopro
-   de fogo — re-ancorado para ficar centrado e com os pés na linha do
-   chão, idêntico ao posicionamento da arte anterior
-   (assets/pixel-art/bosses/boss-dragon2.png).
-3. BLOQUEIO (ESCUDO) EM TODOS OS CONTROLES:
-   · Teclado: tecla C (remapeável no painel de Controles)
-   · Gamepad: R3 ou D-pad baixo (remapeável)
-   · Touch: botão ESCUDO (segurar bloqueia) — só aparece com escudo
-     equipado
-4. BOTÕES TOUCH COM ÍCONES: espada (ataque), ">>" (dash), escudo
-   (bloqueio) e o ícone real de cada habilidade equipada, no lugar das
-   letras A/B/X/Y.
-5. LADINO COM DUAS ADAGAS: a segunda adaga equipada vai para a mão
-   secundária (dano e crítico somam; velocidade de ataque da arma
-   principal). Vale também para o Assassino das Sombras.
-6. Service worker com cache ded-web-v1.5.3 (troca automática dos sprites
-   antigos em quem já jogava a versão publicada).
+CONTEÚDO DE HOJE — NOVO SISTEMA: DIMENSÕES DE TRAVESSIA
+· Ao usar um portal da campanha, existe uma chance rara (40%, com
+  cooldown de 1 nível) de ele desviar para uma DIMENSÃO DE TRAVESSIA:
+  fase especial 2D de plataforma com câmera lateral, gravidade, coyote
+  time, jump buffer e salto de altura variável (segurar = mais alto).
+· 2 tipos, ambos construídos com os packs fornecidos:
+  - BURGO SOMBRIO (pack "GothicVania Town"): cidade gótica ao entardecer,
+    casas/igreja no fundo, chão de pedra, lampiões, barris, caixas,
+    poço, carroça e placas.
+  - BOSQUE DA MEIA-NOITE (pack "Final"): céu noturno com lua, igreja com
+    janelas acesas, lápides, árvore gigante, plataformas de grama e
+    passarelas de pedra, cercas de ferro e arbustos.
+· CENÁRIO COMPLETO (não suspenso): o chão preenche até a base da tela
+  (folhagem/tijolos) e as passarelas elevadas são sustentadas por
+  PILARES até o solo — como nas imagens de referência do pack. Só as
+  plataformas móveis e as que desabam continuam soltas (mecanismos).
+· Geração procedural por seções com validação física — nenhum salto
+  impossível (1000 gerações testadas, 0 falhas).
+· Armadilhas: espinhos, plataformas que desabam, plataformas móveis,
+  atiradores com telegraph. Poucos inimigos, adaptados à lateral.
+· Segredos com baús + moedas; recompensa final proporcional à
+  profundidade; cair no abismo = 1 HP + volta ao checkpoint; morrer
+  devolve à campanha sem recompensa.
+· XP/ouro/inventário/save 100% preservados no retorno à campanha.
+· Introdução narrativa na 1ª entrada (persistida no save). PT/EN/ES.
+· Controles: teclado (A/D mover · W/↑ pular · ESPAÇO atacar · SHIFT
+  dash · Q poção), gamepad (A pular · X/RT atacar) e layout touch
+  próprio de plataforma.
+
+ARQUIVOS:
+· index.html ................. aponta para o bundle novo
+· sw.js ...................... service worker (cache ded-web-v1.5.6)
+· assets/index-*.js .......... código do jogo com o novo sistema
+· assets/ControlsPanel-*.js
+· assets/pixel-art/traversal/  33 imagens dos packs GothicVania + Final
 
 Como aplicar: copie o conteúdo desta pasta por cima do jogo publicado,
-substituindo os arquivos existentes. É só o delta — não apague o resto.
+substituindo os existentes. Depois recarregue com Ctrl+F5.
 
-Obs.: a pasta DEPTHGATE-WEB-COMPLETO contém o jogo inteiro já com tudo
-isto aplicado, caso prefira republicar do zero.
+Obs.: as pastas DEPTHGATE-WEB-COMPLETO (jogo inteiro) e
+DEPTHGATE-WEB-ATUALIZACOES (delta consolidado com TODAS as novidades
+recentes) também já estão atualizadas com isto.
