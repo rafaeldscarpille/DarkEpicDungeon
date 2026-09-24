@@ -1,9 +1,23 @@
-DEPTHGATE — ATUALIZAÇÃO DE HOJE (23/09) — DIMENSÕES DE TRAVESSIA
-=================================================================
+DEPTHGATE — ATUALIZAÇÃO DE HOJE (23/09) — TRAVESSIA + IDENTIDADE SONORA
+=======================================================================
 
 Apenas os arquivos NOVOS/ATUALIZADOS de hoje. Aplique por cima do jogo
 publicado (que já precisa ter as atualizações anteriores — pasta
 DEPTHGATE-WEB-ATUALIZACOES ou DEPTHGATE-WEB-COMPLETO).
+
+NOVO — IDENTIDADE SONORA 16-BIT (OST COMPLETA)
+· Trilha sonora original estilo SNES/Mega Drive gerada em tempo real por
+  um sequenciador chiptune próprio (zero arquivos de áudio, zero peso).
+· 15 músicas: menu, seleção de herói, floresta, catacumbas, ruínas,
+  fortaleza, cidadela glacial, endless, mercador, refúgio, travessia e
+  4 temas de boss.
+· LEITMOTIV DO DRAGÃO: apresentado no 1º encontro e EVOLUÍDO (mais
+  rápido e dramático) no confronto final.
+· Música ADAPTATIVA: camadas de combate entram/saem conforme o perigo,
+  sem reiniciar a faixa. Loops perfeitos, crossfade entre cenas.
+· 8 stingers: vitória, boss derrotado, level up, nova habilidade, nova
+  classe, tesouro, portal (assinatura recorrente) e derrota.
+· CONFIGURAÇÕES ganhou Volume da Interface e Mudo (tudo salvo).
 
 CONTEÚDO DE HOJE — NOVO SISTEMA: DIMENSÕES DE TRAVESSIA
 · TODOS os portais da campanha levam a uma DIMENSÃO DE TRAVESSIA:
