@@ -1,36 +1,38 @@
-DEPTHGATE — PATCH GAMEPAD (DESKTOP) + LAYOUT TOUCH
-===================================================
+DEPTHGATE — PATCH p125 (GAMEPAD + TOUCH + ATAQUE DA TRAVESSIA)
+==============================================================
 
 Como aplicar: copie o conteúdo desta pasta por cima do jogo
-(DEPTHGATE-WEB-COMPLETO), substituindo os existentes. Pode apagar
-assets/index-D6qIWtA7.js e assets/ControlsPanel-kYdEPlgz.js (não são
-mais usados). Recarregue com Ctrl+F5.
+(DEPTHGATE-WEB-COMPLETO), substituindo os existentes. Pode apagar os .js
+antigos em assets/ (index-D6qIWtA7*.js e ControlsPanel-kYdEPlgz*.js que
+não terminem em -p125). Recarregue com Ctrl+F5.
+Este patch substitui o anterior (p124) e já inclui tudo dele.
 
-GAMEPAD
-· O controle agora é detectado por varredura de navigator.getGamepads(),
-  sem depender só do evento "gamepadconnected" (era por isso que às vezes
-  o jogo ignorava o controle no desktop).
-· Prefere controles com mapeamento "standard"; avisa no console se o
-  controle não tiver esse mapeamento.
-· Os eventos de teclado gerados pela navegação de menus com o controle
-  não fazem mais o jogo alternar teclado/gamepad a cada botão.
-· O keyup gerado pelo controle nos menus sai 50 ms depois do keydown,
-  para que JustDown do Phaser enxergue o toque (ex.: B fecha a pausa na
-  Travessia).
+GAMEPAD (desktop)
+· Controle detectado por varredura de navigator.getGamepads(), sem
+  depender só do evento "gamepadconnected".
+· Prefere mapeamento "standard"; avisa no console se não for.
+· Navegação de menus pelo controle não alterna mais teclado/gamepad.
+· keyup sintético atrasado 50 ms (JustDown do Phaser enxerga o toque).
 
 TOUCH
-· Botão de interação "!" saiu de cima da poção: agora fica à esquerda do
-  grupo de botões (espelhado no modo canhoto).
-· O tamanho dos botões passa a acompanhar a opção de tamanho do touch
-  (antes só a distância mudava, e no "pequeno" os botões se encostavam).
+· Botão "!" não sobrepõe mais a poção nem o minimapa.
+· Tamanho dos botões acompanha a opção de tamanho do touch.
 · No tamanho "grande", o minimapa encolhe para não ficar sob os botões.
 
-ARQUIVOS
-· index.html ............................ aponta para o bundle novo
-· sw.js ................................. cache ded-web-v1.5.8
-· assets/index-D6qIWtA7-p124.js ......... código do jogo corrigido
-· assets/ControlsPanel-kYdEPlgz-p124.js . painel de controles (import atualizado)
+ATAQUE NA TRAVESSIA
+· Animação completa do golpe (frames 18→19→20→21→22); antes o frame do
+  golpe (20) nunca aparecia.
+· Buffer de 0,2 s: toque durante o cooldown não é mais perdido.
+· Hitbox retangular contra o corpo do inimigo, ativa por 100 ms
+  (alcance ~65 px, antes ~55 px).
+· Inimigo atingido fica atordoado 0,2 s e o empurrão aparece (antes a IA
+  anulava o knockback no frame seguinte).
 
-Obs.: patch aplicado no bundle compilado. Leve as mesmas mudanças para o
-código-fonte (InputManager, TouchControls, botão de toque e Minimap)
-antes do próximo build, senão elas serão sobrescritas.
+ARQUIVOS
+· index.html ............................ aponta para o bundle p125
+· sw.js ................................. cache ded-web-v1.5.9
+· assets/index-D6qIWtA7-p125.js ......... código do jogo corrigido
+· assets/ControlsPanel-kYdEPlgz-p125.js . painel de controles
+
+Obs.: patch aplicado no bundle compilado. Leve as mudanças para o
+código-fonte antes do próximo build, senão serão sobrescritas.
