@@ -25,7 +25,7 @@ IMPORTANTE
   Precisa ser servido por um site (é limitação dos módulos JavaScript).
 - Não é preciso instalar nada no celular. Não precisa de APK.
 
-NO CELULAR (Android)
+NO CELULAR (Android) Work in Progress
 --------------------
 - Jogue na HORIZONTAL (o jogo pede para virar o aparelho).
 - Controles touch aparecem automaticamente: joystick virtual à esquerda,
@@ -35,7 +35,7 @@ NO CELULAR (Android)
 - DICA: no Chrome, use o menu → "Adicionar à tela inicial" para instalar
   o jogo como aplicativo (PWA): abre em tela cheia, sem barra do navegador.
 
-NO COMPUTADOR
+NO COMPUTADOR  Work in Progress
 -------------
 - Teclado (WASD/setas + espaço/Shift), mouse e gamepad são suportados.
 - Todas as teclas e botões são configuráveis em CONFIGURAÇÕES.
