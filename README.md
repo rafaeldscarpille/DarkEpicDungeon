@@ -10,10 +10,9 @@ Basta hospedar os arquivos em QUALQUER serviço de site estático e abrir
 o endereço no navegador do celular (ou do computador).
 
 Opções gratuitas e fáceis (arraste a pasta e pronto):
-  1. Netlify Drop  →  https://app.netlify.com/drop
-  2. GitHub Pages  →  suba os arquivos num repositório e ative o Pages
-  3. Vercel        →  https://vercel.com
-  4. itch.io       →  envie como "HTML game" (zip desta pasta)
+  1. GitHub Pages  →  suba os arquivos num repositório e ative o Pages
+  2. Vercel        →  https://vercel.com
+  3. itch.io       →  envie como "HTML game" (zip desta pasta)
 
 Também funciona em qualquer servidor próprio (Apache, Nginx, IIS...):
 copie os arquivos para a pasta pública do servidor. Pode ficar em
