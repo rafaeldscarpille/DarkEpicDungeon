@@ -1,6 +1,6 @@
 # DarkEpicDungeon
 
-DARK EPIC DUNGEONS — VERSÃO WEB (v1.1.0)
+DARK EPIC DUNGEONS — VERSÃO WEB (v1.2.3)
 ==========================================
 
 COMO JOGAR
