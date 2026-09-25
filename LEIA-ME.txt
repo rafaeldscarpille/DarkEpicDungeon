@@ -1,38 +1,43 @@
-DEPTHGATE — PATCH p125 (GAMEPAD + TOUCH + ATAQUE DA TRAVESSIA)
-==============================================================
+DEPTHGATE — PATCH p127
+======================
 
 Como aplicar: copie o conteúdo desta pasta por cima do jogo
-(DEPTHGATE-WEB-COMPLETO), substituindo os existentes. Pode apagar os .js
-antigos em assets/ (index-D6qIWtA7*.js e ControlsPanel-kYdEPlgz*.js que
-não terminem em -p125). Recarregue com Ctrl+F5.
-Este patch substitui o anterior (p124) e já inclui tudo dele.
+(DEPTHGATE-WEB-COMPLETO). Pode apagar os .js antigos em assets/
+(os que não terminam em -p127). Recarregue com Ctrl+F5.
+Substitui os patches anteriores (p124/p125/p126) e inclui tudo deles.
 
-GAMEPAD (desktop)
-· Controle detectado por varredura de navigator.getGamepads(), sem
-  depender só do evento "gamepadconnected".
-· Prefere mapeamento "standard"; avisa no console se não for.
-· Navegação de menus pelo controle não alterna mais teclado/gamepad.
-· keyup sintético atrasado 50 ms (JustDown do Phaser enxerga o toque).
+DANO DOS INIMIGOS POR CENÁRIO (p126, Infinito ajustado no p127)
+· Campanha: +25% por cenário
+    Floresta 1,00x · Catacumbas 1,25x · Ruínas 1,50x
+    Cidadela Glacial 1,75x · Fortaleza dos Dragões 2,00x
+· Modo Infinito (p127): +25% POR PROFUNDIDADE, sem teto, além da curva
+  que já existia. Prof. 2 = 1,25x · 5 = 2x · 10 = 3,25x · 20 = 5,75x.
+· Travessia: +25% por cenário (a travessia usa o valor do próximo).
+· Chefes também seguem o multiplicador.
+· O multiplicador é aplicado DEPOIS da armadura, com arredondamento
+  estocástico: 1,25 de dano = 1 em 75% dos golpes e 2 em 25%.
 
-TOUCH
-· Botão "!" não sobrepõe mais a poção nem o minimapa.
-· Tamanho dos botões acompanha a opção de tamanho do touch.
-· No tamanho "grande", o minimapa encolhe para não ficar sob os botões.
+  Causa do problema: os ataques especiais dos inimigos ignoravam toda a
+  escala (só o dano de contato escalava) e o dano era arredondado para
+  inteiro antes e depois da armadura, então 1 × 1,4 virava 1 de novo.
+  Os ataques dos inimigos agora usam a escala do inimigo.
 
-ATAQUE NA TRAVESSIA
-· Animação completa do golpe (frames 18→19→20→21→22); antes o frame do
-  golpe (20) nunca aparecia.
-· Buffer de 0,2 s: toque durante o cooldown não é mais perdido.
-· Hitbox retangular contra o corpo do inimigo, ativa por 100 ms
-  (alcance ~65 px, antes ~55 px).
-· Inimigo atingido fica atordoado 0,2 s e o empurrão aparece (antes a IA
-  anulava o knockback no frame seguinte).
+INCLUÍDO DOS PATCHES ANTERIORES
+· Gamepad no desktop (detecção sem depender do evento, menus).
+· Touch: botão "!" sem sobreposição, tamanho dos botões, minimapa.
+· Travessia: animação completa do golpe, buffer de ataque, alcance e
+  knockback.
+
+AJUSTE FINO
+No bundle, procure a função __stgMult: 0.25 é o ganho por cenário da
+campanha, a segunda 0.25 é o ganho por profundidade do modo Infinito.
 
 ARQUIVOS
-· index.html ............................ aponta para o bundle p125
-· sw.js ................................. cache ded-web-v1.5.9
-· assets/index-D6qIWtA7-p125.js ......... código do jogo corrigido
-· assets/ControlsPanel-kYdEPlgz-p125.js . painel de controles
+· index.html · sw.js (cache ded-web-v1.6.1)
+· assets/index-D6qIWtA7-p127.js · assets/ControlsPanel-kYdEPlgz-p127.js
 
 Obs.: patch aplicado no bundle compilado. Leve as mudanças para o
 código-fonte antes do próximo build, senão serão sobrescritas.
+
+Limite que continua valendo: um único golpe nunca tira mais que 60% da
+vida máxima (regra original do jogo, evita morte de um golpe só).
