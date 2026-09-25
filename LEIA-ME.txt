@@ -1,63 +1,36 @@
-DEPTHGATE — ATUALIZAÇÃO DE HOJE (23/09) — TRAVESSIA + IDENTIDADE SONORA
-=======================================================================
+DEPTHGATE — PATCH GAMEPAD (DESKTOP) + LAYOUT TOUCH
+===================================================
 
-Apenas os arquivos NOVOS/ATUALIZADOS de hoje. Aplique por cima do jogo
-publicado (que já precisa ter as atualizações anteriores — pasta
-DEPTHGATE-WEB-ATUALIZACOES ou DEPTHGATE-WEB-COMPLETO).
+Como aplicar: copie o conteúdo desta pasta por cima do jogo
+(DEPTHGATE-WEB-COMPLETO), substituindo os existentes. Pode apagar
+assets/index-D6qIWtA7.js e assets/ControlsPanel-kYdEPlgz.js (não são
+mais usados). Recarregue com Ctrl+F5.
 
-NOVO — IDENTIDADE SONORA 16-BIT (OST COMPLETA)
-· Trilha sonora original estilo SNES/Mega Drive gerada em tempo real por
-  um sequenciador chiptune próprio (zero arquivos de áudio, zero peso).
-· 15 músicas: menu, seleção de herói, floresta, catacumbas, ruínas,
-  fortaleza, cidadela glacial, endless, mercador, refúgio, travessia e
-  4 temas de boss.
-· LEITMOTIV DO DRAGÃO: apresentado no 1º encontro e EVOLUÍDO (mais
-  rápido e dramático) no confronto final.
-· Música ADAPTATIVA: camadas de combate entram/saem conforme o perigo,
-  sem reiniciar a faixa. Loops perfeitos, crossfade entre cenas.
-· 8 stingers: vitória, boss derrotado, level up, nova habilidade, nova
-  classe, tesouro, portal (assinatura recorrente) e derrota.
-· CONFIGURAÇÕES ganhou Volume da Interface e Mudo (tudo salvo).
+GAMEPAD
+· O controle agora é detectado por varredura de navigator.getGamepads(),
+  sem depender só do evento "gamepadconnected" (era por isso que às vezes
+  o jogo ignorava o controle no desktop).
+· Prefere controles com mapeamento "standard"; avisa no console se o
+  controle não tiver esse mapeamento.
+· Os eventos de teclado gerados pela navegação de menus com o controle
+  não fazem mais o jogo alternar teclado/gamepad a cada botão.
+· O keyup gerado pelo controle nos menus sai 50 ms depois do keydown,
+  para que JustDown do Phaser enxergue o toque (ex.: B fecha a pausa na
+  Travessia).
 
-CONTEÚDO DE HOJE — NOVO SISTEMA: DIMENSÕES DE TRAVESSIA
-· TODOS os portais da campanha levam a uma DIMENSÃO DE TRAVESSIA:
-  fase especial 2D de plataforma com câmera lateral, gravidade, coyote
-  time, jump buffer e salto de altura variável (segurar = mais alto).
-  Os tipos se alternam entre um portal e outro.
-· 2 tipos, ambos construídos com os packs fornecidos:
-  - BURGO SOMBRIO (pack "GothicVania Town"): cidade gótica ao entardecer,
-    casas/igreja no fundo, chão de pedra, lampiões, barris, caixas,
-    poço, carroça e placas.
-  - BOSQUE DA MEIA-NOITE (pack "Final"): céu noturno com lua, igreja com
-    janelas acesas, lápides, árvore gigante, plataformas de grama e
-    passarelas de pedra, cercas de ferro e arbustos.
-· CENÁRIO COMPLETO (não suspenso): o chão preenche até a base da tela
-  (folhagem/tijolos) e as passarelas elevadas são sustentadas por
-  PILARES até o solo — como nas imagens de referência do pack. Só as
-  plataformas móveis e as que desabam continuam soltas (mecanismos).
-· Geração procedural por seções com validação física — nenhum salto
-  impossível (1000 gerações testadas, 0 falhas).
-· Armadilhas: espinhos, plataformas que desabam, plataformas móveis,
-  atiradores com telegraph. Poucos inimigos, adaptados à lateral.
-· Segredos com baús + moedas; recompensa final proporcional à
-  profundidade; cair no abismo = 1 HP + volta ao checkpoint; morrer
-  devolve à campanha sem recompensa.
-· XP/ouro/inventário/save 100% preservados no retorno à campanha.
-· Introdução narrativa na 1ª entrada (persistida no save). PT/EN/ES.
-· Controles: teclado (A/D mover · W/↑ pular · ESPAÇO atacar · SHIFT
-  dash · Q poção), gamepad (A pular · X/RT atacar) e layout touch
-  próprio de plataforma.
+TOUCH
+· Botão de interação "!" saiu de cima da poção: agora fica à esquerda do
+  grupo de botões (espelhado no modo canhoto).
+· O tamanho dos botões passa a acompanhar a opção de tamanho do touch
+  (antes só a distância mudava, e no "pequeno" os botões se encostavam).
+· No tamanho "grande", o minimapa encolhe para não ficar sob os botões.
 
-ARQUIVOS:
-· index.html ................. aponta para o bundle novo
-· sw.js ...................... service worker (cache ded-web-v1.5.6)
-· assets/index-*.js .......... código do jogo com o novo sistema
-· assets/ControlsPanel-*.js
-· assets/pixel-art/traversal/  33 imagens dos packs GothicVania + Final
+ARQUIVOS
+· index.html ............................ aponta para o bundle novo
+· sw.js ................................. cache ded-web-v1.5.8
+· assets/index-D6qIWtA7-p124.js ......... código do jogo corrigido
+· assets/ControlsPanel-kYdEPlgz-p124.js . painel de controles (import atualizado)
 
-Como aplicar: copie o conteúdo desta pasta por cima do jogo publicado,
-substituindo os existentes. Depois recarregue com Ctrl+F5.
-
-Obs.: as pastas DEPTHGATE-WEB-COMPLETO (jogo inteiro) e
-DEPTHGATE-WEB-ATUALIZACOES (delta consolidado com TODAS as novidades
-recentes) também já estão atualizadas com isto.
+Obs.: patch aplicado no bundle compilado. Leve as mesmas mudanças para o
+código-fonte (InputManager, TouchControls, botão de toque e Minimap)
+antes do próximo build, senão elas serão sobrescritas.
