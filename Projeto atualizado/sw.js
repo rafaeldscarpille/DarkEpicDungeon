@@ -1,4 +1,4 @@
-const CACHE = "ded-web-v4.18.0-pirata-andar-correr";
+const CACHE = "ded-web-v4.19.0-pirata-padrao-jogo";
 
 self.addEventListener("install", () => self.skipWaiting());
 

@@ -32,9 +32,9 @@ OUT_DIRS = [os.path.join(ROOT, "assets", "pixel-art", "characters"),
 PREVIEW = sys.argv[1] if len(sys.argv) > 1 else None
 
 FW = FH = 128
-FOOT = 123            # linha dos pés no quadro
-STAND_H = 98          # altura em pé na textura (≈ 70 px × 0.7 / 0.5 dos outros heróis)
-GAME_SCALE = 0.5
+FOOT = 118            # linha dos pés no quadro (mesma dos outros heróis)
+STAND_H = 68          # altura em pé: a mesma dos outros heróis (Samurai 68, Xamã 67)
+GAME_SCALE = 0.7      # mesma grade de pixel dos outros heróis
 
 # ---------------------------------------------------------------- recorte
 img = cv2.cvtColor(cv2.imread(SRC, cv2.IMREAD_UNCHANGED)[:, :, :3], cv2.COLOR_BGR2RGB).astype(np.float32)
@@ -233,12 +233,94 @@ for name in ORDER:
     print(f"pirate_{name}.png", strips[name].shape[1] // FW, "quadros", f"{strips[name].shape[1]}x{FH}")
 
 # folha do jogo = as animações em sequência (o formato "pack" que o jogo já usa)
+# ---------------------------------------------------------------- padrão visual do jogo
+# Os heróis do jogo têm ~68 px, 14-23 cores chapadas e contorno escuro. A arte enviada é
+# "pintada" (centenas de tons) e cada quadro gerado muda um pouco os detalhes, o que pisca
+# na tela. Aqui: (1) parado vira um único desenho com respiração de 1 px (como os outros);
+# (2) paleta única de PALETTE cores para todas as animações; (3) limpeza de pixels soltos;
+# (4) borda interna escurecida (contorno sem engrossar a silhueta).
+PALETTE = 26
+
+
+def breathe(base):
+    """4 quadros de respiração: o tronco desce 1 px e volta; pernas paradas."""
+    ys = np.nonzero(base[..., 3].any(1))[0]
+    waist = int(ys.min() + (ys.max() - ys.min()) * 0.56)
+    down = base.copy()
+    top = base[:waist].copy()
+    down[:waist] = 0
+    sub = down[1:waist + 1]
+    m = top[..., 3] > 0
+    sub[m] = top[m]
+    return [base, base, down, down]
+
+
+def quantize_all(strips_):
+    allpx = np.concatenate([st[st[..., 3] > 0][:, :3] for st in strips_.values()]).astype(np.float32)
+    lab_px = cv2.cvtColor(allpx[None] / 255.0, cv2.COLOR_RGB2LAB)[0]
+    crit = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 80, 0.1)
+    _, _, cen = cv2.kmeans(lab_px.astype(np.float32), PALETTE, None, crit, 5, cv2.KMEANS_PP_CENTERS)
+    pal = (cv2.cvtColor(cen[None].astype(np.float32), cv2.COLOR_LAB2RGB)[0] * 255).clip(0, 255)
+    out = {}
+    for k, st in strips_.items():
+        q = st.copy()
+        m = st[..., 3] > 0
+        lp = cv2.cvtColor(st[..., :3].astype(np.float32)[m][None] / 255.0, cv2.COLOR_RGB2LAB)[0]
+        idx = ((lp[:, None, :] - cen[None]) ** 2).sum(-1).argmin(1)
+        q[m, :3] = pal[idx].round().astype(np.uint8)
+        out[k] = q
+    return out, pal
+
+
+def clean_and_outline(st):
+    st = st.copy()
+    a = st[..., 3] > 0
+    rgb = st[..., :3].astype(int)
+    for _ in range(2):   # pixel solto no meio de uma área de cor única -> cor da área
+        nb = [np.roll(rgb, s_, axis=ax) for ax, s_ in ((0, 1), (0, -1), (1, 1), (1, -1))]
+        na = [np.roll(a, s_, axis=ax) for ax, s_ in ((0, 1), (0, -1), (1, 1), (1, -1))]
+        same = (np.abs(nb[0] - nb[1]).sum(-1) < 8) & (np.abs(nb[2] - nb[3]).sum(-1) < 8) & (np.abs(nb[0] - nb[2]).sum(-1) < 8)
+        odd = a & na[0] & na[1] & na[2] & na[3] & same & (np.abs(rgb - nb[0]).sum(-1) > 8)
+        rgb[odd] = nb[0][odd]
+    st[..., :3] = rgb.astype(np.uint8)
+    k4 = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+    nbc = ndi.convolve(a.astype(int), k4, mode="constant")
+    st[a & (nbc <= 1), 3] = 0                      # fiapos de 1 px na borda
+    a = st[..., 3] > 0
+    edge = a & ~ndi.binary_erosion(a, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]])
+    dark = (st[..., :3].astype(int) * 0.38 + np.array([10, 6, 6])).clip(0, 255).astype(np.uint8)
+    st[edge, :3] = dark[edge]
+    return st
+
+
+strips["idle"] = np.concatenate(breathe(strips["idle"][:, :FW]), axis=1)
+ANIMS["idle"]["fps"] = 4
+ANIMS["walk"]["fps"], ANIMS["run"]["fps"] = 11, 15   # mesmas velocidades dos outros heróis
+ANIMS["idle"]["src"] = ANIMS["idle"]["src"][:1] * 4
+# a arte enviada é bem mais escura que os outros heróis: clareia (gama) e satura um pouco
+for _k, _st in strips.items():
+    _m = _st[..., 3] > 0
+    _c = _st[..., :3].astype(np.float32) / 255.0
+    _c = _c ** 0.82
+    _l = _c.mean(-1, keepdims=True)
+    _c = np.clip(_l + (_c - _l) * 1.15, 0, 1)
+    _st[..., :3] = np.where(_m[..., None], (_c * 255).round(), _st[..., :3]).astype(np.uint8)
+strips, _pal = quantize_all(strips)
+for k in strips:
+    strips[k] = np.concatenate([clean_and_outline(strips[k][:, i * FW:(i + 1) * FW])
+                                for i in range(strips[k].shape[1] // FW)], axis=1)
+    write_png(os.path.join(STRIP_DIR, f"pirate_{k}.png"), strips[k])
+n = 0
+for name in ORDER:
+    start[name] = n
+    n += strips[name].shape[1] // FW
+
 sheet = np.concatenate([strips[k] for k in ORDER], axis=1)
 I = lambda name, k=0: start[name] + k
 cnt = lambda name: strips[name].shape[1] // FW
 amap = {
     "idle": [I("idle", k) for k in range(cnt("idle"))],
-    "idlevar": [I("idle", k) for k in (2, 5, 2)],
+    "idlevar": [I("idle", k) for k in (0, 2, 0)],
     "walk": [I("walk", k) for k in range(cnt("walk"))],
     "run": [I("run", k) for k in range(cnt("run"))],
     # ataque (arma: preparação 320 ms, golpe 120 ms, recuperação 240 ms):
@@ -258,14 +340,14 @@ amap = {
 ys, xs = np.nonzero(sheet[:, :FW, 3] > 0)
 top = int(ys.min())
 fx = int(round(xs[ys < top + 22].mean()))
-P = 30
+P = 22                 # mesmo recorte de retrato dos outros heróis (22x22)
 portrait = [fx - P // 2 + 1, max(0, top - 1), P, P]
 
-layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": True, "footY": FOOT, "bakedWeapon": True,
+layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "footY": FOOT, "bakedWeapon": True,
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
           "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
 
-KEY = "pirate-hd8"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-px1"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -274,8 +356,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
