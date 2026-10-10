@@ -82,7 +82,7 @@ for _fs in figs.values():
         _f["src"] = (img, lab)
 
 
-def segment_walkrun(path):
+def segment_dark_sheet(path, erase=()):
     """Folha de andar/correr (2 linhas x 8 quadros, fundo escuro com brilho avermelhado).
 
     Botas e calças escuras quase somem no fundo: limiar baixo ligado às partes fortes
@@ -90,6 +90,8 @@ def segment_walkrun(path):
     """
     from skimage.filters import apply_hysteresis_threshold
     im = cv2.cvtColor(cv2.imread(path, cv2.IMREAD_UNCHANGED)[:, :, :3], cv2.COLOR_BGR2RGB).astype(np.float32)
+    for (y0, y1, x0, x1) in erase:                      # rótulos de texto: vira fundo
+        im[y0:y1, x0:x1] = im[y0:y1, x1:x1 + 1]
     fg = np.zeros(im.shape[:2], bool)
     for _ in range(4):
         w = (~fg).astype(np.float32)
@@ -115,19 +117,23 @@ def segment_walkrun(path):
             lb[lb == sm["id"]] = best["id"]
             best.update(x0=min(best["x0"], sm["x0"]), x1=max(best["x1"], sm["x1"]),
                         y0=min(best["y0"], sm["y0"]), y1=max(best["y1"], sm["y1"]))
-    mid = im.shape[0] * 0.55
-    return {"walk2": sorted([f for f in bigs if (f["y0"] + f["y1"]) / 2 < mid], key=lambda f: f["x0"]),
-            "run2": sorted([f for f in bigs if (f["y0"] + f["y1"]) / 2 >= mid], key=lambda f: f["x0"])}
+    return bigs
 
 
-WALKRUN_SRC = os.path.join(ROOT, "scripts", "source", "capitao-scarpa-andar-correr.png")
-figs.update(segment_walkrun(WALKRUN_SRC))
+# Folha v3 (scripts/source/capitao-scarpa-folha-v3.png): todas as animações do mesmo
+# desenho e na mesma escala — PARADO, ANDANDO, CORRENDO, MORRENDO e ATACANDO, 8 quadros cada.
+V3_SRC = os.path.join(ROOT, "scripts", "source", "capitao-scarpa-folha-v3.png")
+_v3 = segment_dark_sheet(V3_SRC, erase=[(10, 48, 0, 160), (218, 256, 0, 160), (424, 462, 0, 160),
+                                        (616, 656, 0, 160), (806, 846, 0, 160)])
+for _n, _a, _b in [("idle", 0, 215), ("walk", 215, 420), ("run", 420, 612), ("death", 612, 805), ("atk", 805, 1024)]:
+    figs[_n] = sorted([f for f in _v3 if _a <= (f["y0"] + f["y1"]) / 2 < _b], key=lambda f: f["x0"])
 
 # a folha v2 desenha todas as linhas na mesma escala: uma escala só para todas as animações
 # (o personagem em pé mede ~177 px na folha → STAND_H no jogo)
 SCALE = {k: STAND_H / 177 for k in ("idle", "walk", "run", "atk", "death")}
 # folha de andar/correr (scripts/source/capitao-scarpa-andar-correr.png): pirata com ~282 px
-SCALE.update(walk2=STAND_H / 282, run2=STAND_H / 282)
+# folha v3: o pirata em pé mede ~189 px; a mesma escala para todas as animações
+SCALE = {k: STAND_H / 189 for k in ("idle", "walk", "run", "atk", "death")}
 
 # ---------------------------------------------------------------- animações
 # Folha v2 (scripts/source/capitao-scarpa-folha-v2.png): todas as poses de lado e o
@@ -137,9 +143,9 @@ ANIMS = {
     "idle":   dict(src=[("idle", i) for i in range(8)], v="row", h="torso", fps=6, loop=True),
     # andando e correndo: folha própria com as pernas alternando (8 + 8 quadros), na ordem
     # desenhada, alinhados pelo quadril e mantendo o sobe-e-desce de cada linha
-    "walk":   dict(src=[("walk2", i) for i in range(8)], v="row", h="hip", fps=10, loop=True),
-    "run":    dict(src=[("run2", i) for i in range(8)], v="row", h="hip", fps=12, loop=True),
-    "attack": dict(src=[("atk", i) for i in range(9)], v="row", h="torso", fps=13, loop=False),
+    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="hip", fps=11, loop=True),
+    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="hip", fps=14, loop=True),
+    "attack": dict(src=[("atk", i) for i in range(8)], v="row", h="torso", fps=13, loop=False),
     "death":  dict(src=[("death", i) for i in range(8)], v="feet", h="bbox", fps=9, loop=False),
 }
 ORDER = ["idle", "walk", "run", "attack", "death"]
@@ -239,7 +245,7 @@ for name in ORDER:
 # na tela. Aqui: (1) parado vira um único desenho com respiração de 1 px (como os outros);
 # (2) paleta única de PALETTE cores para todas as animações; (3) limpeza de pixels soltos;
 # (4) borda interna escurecida (contorno sem engrossar a silhueta).
-PALETTE = 26
+PALETTE = 40
 
 
 def breathe(base):
@@ -293,10 +299,6 @@ def clean_and_outline(st):
     return st
 
 
-strips["idle"] = np.concatenate(breathe(strips["idle"][:, :FW]), axis=1)
-ANIMS["idle"]["fps"] = 4
-ANIMS["walk"]["fps"], ANIMS["run"]["fps"] = 11, 15   # mesmas velocidades dos outros heróis
-ANIMS["idle"]["src"] = ANIMS["idle"]["src"][:1] * 4
 # a arte enviada é bem mais escura que os outros heróis: clareia (gama) e satura um pouco
 for _k, _st in strips.items():
     _m = _st[..., 3] > 0
@@ -320,18 +322,20 @@ I = lambda name, k=0: start[name] + k
 cnt = lambda name: strips[name].shape[1] // FW
 amap = {
     "idle": [I("idle", k) for k in range(cnt("idle"))],
-    "idlevar": [I("idle", k) for k in (0, 2, 0)],
+    "idlevar": [I("idle", k) for k in (3, 4, 3)],
     "walk": [I("walk", k) for k in range(cnt("walk"))],
     "run": [I("run", k) for k in range(cnt("run"))],
     # ataque (arma: preparação 320 ms, golpe 120 ms, recuperação 240 ms):
     # 0 postura · 1 prepara · 2 recua o sabre | 3 avança · 4 golpe amplo | 5 extensão · 6 continuação · 7-8 volta
-    "attackW": [I("attack", k) for k in (0, 1, 2)], "attackH": [I("attack", k) for k in (3, 4)],
-    "attackR": [I("attack", k) for k in (5, 6, 7, 8)],
-    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 4), "recovery": I("attack", 7),
+    # 0 postura · 1 prepara · 2 sabre erguido | 3 golpe | 4 recolhe · 6 abaixa · 7 postura
+    # (o 5 da folha ergue o sabre de novo para um 2º golpe; fica de fora do golpe simples)
+    "attackW": [I("attack", k) for k in (0, 1, 2)], "attackH": [I("attack", 3)],
+    "attackR": [I("attack", k) for k in (4, 6, 7)],
+    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 3), "recovery": I("attack", 6),
     "guardStart": I("attack", 0), "guard": I("attack", 0),
     "hurt": I("death", 0), "hurtB": I("death", 1), "stunA": I("death", 1), "stunB": I("death", 2),
     "dashA": I("run", 0), "dash": I("run", 3),
-    "castA": I("attack", 1), "cast": I("attack", 6), "castC": I("attack", 7),
+    "castA": I("attack", 1), "cast": I("attack", 3), "castC": I("attack", 6),
     "deathSeq": [I("death", k) for k in range(cnt("death"))],
     "deathA": I("death", 0), "deathB": I("death", 3), "deathC": I("death", cnt("death") - 1),
 }
@@ -347,7 +351,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "foot
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
           "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
 
-KEY = "pirate-px1"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-v3a"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -356,8 +360,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,
