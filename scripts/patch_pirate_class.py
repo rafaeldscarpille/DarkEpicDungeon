@@ -120,7 +120,7 @@ rep('t&&(this.container.setPosition(t.x,t.y-2),', 't&&(this.container.setPositio
 rep('deliverAttack(i,t,e=null){', 'deliverAttack(i,t,e=null){this.scene.__krakenUntil>this.scene.time.now&&this.scene.__krakenStrike?.();')
 
 # ------------------------------------------------------------------ carregamento de arquivos
-rep('["shaman",128,128,"pack"]];', '["shaman",128,128,"pack"],["pirate",128,128,"v3b"]];')
+rep('["shaman",128,128,"pack"]];', '["shaman",128,128,"pack"],["pirate",128,128,"sep1"]];')
 rep('this.load.spritesheet("druid-eagle","assets/pixel-art/characters/druid-eagle.png",{frameWidth:48,frameHeight:48});',
     'this.load.spritesheet("druid-eagle","assets/pixel-art/characters/druid-eagle.png",{frameWidth:48,frameHeight:48});'
     'this.load.spritesheet("pirate-parrot","assets/pixel-art/characters/pirate-parrot.png",{frameWidth:48,frameHeight:48});'

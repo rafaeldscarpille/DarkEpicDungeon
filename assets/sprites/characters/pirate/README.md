@@ -1,6 +1,6 @@
 # Capitão Scarpa (classe PIRATE): sprites animados
 
-Fonte: `scripts/source/capitao-scarpa-folha-v3.png`, uma folha única com 5 linhas (PARADO, ANDANDO, CORRENDO, MORRENDO e ATACANDO) de 8 quadros cada, todas no mesmo desenho e na mesma escala.
+Fontes: `scripts/source/pirata-separados/` (parado, andando, correndo e atacando: 8 quadros cada, 222×444 com fundo transparente, todos na mesma tela) e `scripts/source/capitao-scarpa-folha-v3.png` (só a morte, que não veio nos quadros separados). Os quadros separados ficam na posição em que foram desenhados na tela comum, então o sobe-e-desce e o avanço do golpe são os do artista. Pedaços do quadro vizinho que vieram no recorte são removidos.
 
 Cada animação fica em um PNG próprio. É uma tira horizontal de células de **128×128**, com fundo transparente. Os pés ficam na linha **y = 118** de cada célula.
 
@@ -25,24 +25,24 @@ O `pirate_config.json` traz os mesmos dados em formato de máquina: quadros, fps
 
 O jogo não cria um sistema novo de animação. Ele usa o mesmo formato "pack" dos outros heróis:
 
-- `scripts/build_pirate_sprites.py` gera as tiras acima e as junta na folha que o jogo carrega, `assets/pixel-art/characters/pirate-v3b-body.png` (40 células) com `pirate-v3b.json`. No JSON ficam o mapa de estados e as velocidades (`fps`).
+- `scripts/build_pirate_sprites.py` gera as tiras acima e as junta na folha que o jogo carrega, `assets/pixel-art/characters/pirate-sep1-body.png` (40 células) com `pirate-sep1.json`. No JSON ficam o mapa de estados e as velocidades (`fps`).
 - **Parado, andando e correndo** viram animações em loop (`mk4b-pirate-idle`, `-walk`, `-run`). Para ele correr, o direcional precisa estar inclinado acima de 62%, a mesma regra do jogo para todos os heróis. No teclado ele sempre corre.
 - **Ataque:** a imagem acompanha as fases da arma, e o dano sai no fim da preparação, no tempo do jogo:
   - preparação (320 ms): quadros 0 (postura), 1 (prepara) e 2 (recua o sabre);
-  - golpe (120 ms): quadro 3 (golpe);
-  - recuperação (240 ms): quadros 4 (recolhe), 6 (abaixa) e 7 (volta à postura). O quadro 5 da folha ergue o sabre para um 2º golpe e fica de fora do golpe simples.
+  - golpe (120 ms): quadros 3 (desce) e 4 (corte, lâmina inteira);
+  - recuperação (240 ms): quadros 5 (continuação) e 7 (volta à postura). O quadro 6 ergue o sabre para um 2º golpe e fica de fora do golpe simples.
 
   O ataque não reinicia a cada atualização e, ao terminar, volta ao estado atual (parado, andando ou correndo).
 - **Morte:** tem prioridade sobre tudo. Toca os 8 quadros uma vez e fica no último até o jogo remover o corpo.
-- **Habilidades** usam quadros destas tiras. A Fúria Pirata usa a postura do ataque, um quadro de corrida para o salto e o golpe (ataque 3).
+- **Habilidades** usam quadros destas tiras. A Fúria Pirata usa a postura do ataque, um quadro de corrida para o salto e o corte (ataque 4).
 - Virar para a esquerda espelha o sprite, como em todos os heróis do jogo.
 
 ## Para corrigir ou trocar um quadro
 
 1. Edite a folha de origem, ou troque a origem na tabela `ANIMS` do script.
 2. Rode `python scripts/build_pirate_sprites.py`.
-3. Se mudar a folha do jogo, troque o nome (`KEY` no script e o `"v3b"` no `scripts/patch_pirate_class.py`). Sem isso, o cache offline do navegador continua mostrando a versão antiga.
+3. Se mudar a folha do jogo, troque o nome (`KEY` no script e o `"sep1"` no `scripts/patch_pirate_class.py`). Sem isso, o cache offline do navegador continua mostrando a versão antiga.
 
 ## Andando e correndo
 
-Vêm das linhas ANDANDO e CORRENDO da folha v3, na ordem desenhada e alinhadas pelo quadril. Como toda a folha tem a mesma escala (pirata em pé ≈ 189 px na origem), não há salto de tamanho entre parado, andando e correndo.
+Vêm das pastas `andando` e `correndo`, na ordem dos arquivos, na mesma escala do parado (pirata em pé ≈ 372 px na origem).

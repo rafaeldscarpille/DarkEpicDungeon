@@ -136,17 +136,59 @@ SCALE = {k: STAND_H / 177 for k in ("idle", "walk", "run", "atk", "death")}
 # folha v3: o pirata em pé mede ~189 px; a mesma escala para todas as animações
 SCALE = {k: STAND_H / 189 for k in ("idle", "walk", "run", "atk", "death")}
 
+# Quadros separados refinados (scripts/source/pirata-separados/<pasta>/<pasta>_NN.png):
+# 222x444, fundo transparente, todos na mesma tela e na mesma escala (pirata em pé ≈ 372 px).
+# Substituem parado, andando, correndo e atacando; a morte continua vindo da folha v3.
+SEP_DIR = os.path.join(ROOT, "scripts", "source", "pirata-separados")
+
+
+def load_separated(folder):
+    out = []
+    for k in range(1, 9):
+        rgba = cv2.imread(os.path.join(SEP_DIR, folder, f"{folder}_{k:02d}.png"), cv2.IMREAD_UNCHANGED)
+        rgba = cv2.copyMakeBorder(rgba, 4, 4, 4, 4, cv2.BORDER_CONSTANT, value=(0, 0, 0, 0))
+        im = cv2.cvtColor(rgba[:, :, :3], cv2.COLOR_BGR2RGB).astype(np.float32)
+        # fica só o corpo e o que encosta nele: pedaços do quadro vizinho que vieram no recorte
+        # (mão/sabre cortados na borda esquerda/direita) e poeira solta saem
+        solid = rgba[:, :, 3] > 128
+        lb, n = ndi.label(solid)
+        sizes = ndi.sum(np.ones_like(lb), lb, range(1, n + 1))
+        main = 1 + int(np.argmax(sizes))
+        near = ndi.binary_dilation(lb == main, iterations=6)
+        keep = [main]
+        W_ = solid.shape[1]
+        for i in range(1, n + 1):
+            if i == main or sizes[i - 1] < 30:
+                continue
+            xs_i = np.nonzero((lb == i).any(0))[0]
+            edge = xs_i.min() <= 5 or xs_i.max() >= W_ - 6
+            if (near & (lb == i)).any() and not edge:
+                keep.append(i)
+        lb = np.isin(lb, keep).astype(np.int32)
+
+        ys, xs = np.nonzero(lb)
+        out.append(dict(id=1, x0=int(xs.min()), x1=int(xs.max()) + 1, y0=int(ys.min()), y1=int(ys.max()) + 1,
+                        area=int(lb.sum()), src=(im, lb)))
+    return out
+
+
+for _n, _folder in [("idle", "parado"), ("walk", "andando"), ("run", "correndo"), ("atk", "atacando")]:
+    figs[_n] = load_separated(_folder)
+    SCALE[_n] = STAND_H / 372
+
 # ---------------------------------------------------------------- animações
 # Folha v2 (scripts/source/capitao-scarpa-folha-v2.png): todas as poses de lado e o
 # sabre sempre na mesma mão. vertical: "row" mantém a altura relativa ao chão da linha
 # (a corrida sobe e desce de verdade); "feet" encosta cada quadro no chão (a queda).
 ANIMS = {
-    "idle":   dict(src=[("idle", i) for i in range(8)], v="row", h="torso", fps=6, loop=True),
+    # quadros separados: "canvas" = todos os quadros na posição em que foram desenhados na
+    # tela comum (o sobe-e-desce e o avanço do golpe ficam como o artista fez)
+    "idle":   dict(src=[("idle", i) for i in range(8)], v="row", h="canvas", fps=6, loop=True),
     # andando e correndo: folha própria com as pernas alternando (8 + 8 quadros), na ordem
     # desenhada, alinhados pelo quadril e mantendo o sobe-e-desce de cada linha
-    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="hip", fps=11, loop=True),
-    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="hip", fps=14, loop=True),
-    "attack": dict(src=[("atk", i) for i in range(8)], v="row", h="torso", fps=13, loop=False),
+    "walk":   dict(src=[("walk", i) for i in range(8)], v="row", h="canvas", fps=11, loop=True),
+    "run":    dict(src=[("run", i) for i in range(8)], v="row", h="canvas", fps=14, loop=True),
+    "attack": dict(src=[("atk", i) for i in range(8)], v="row", h="canvas", fps=13, loop=False),
     "death":  dict(src=[("death", i) for i in range(8)], v="feet", h="bbox", fps=9, loop=False),
 }
 ORDER = ["idle", "walk", "run", "attack", "death"]
@@ -271,7 +313,13 @@ def build_strip(name, spec):
         m = a > 0.5
         q = (c * 255).round().astype(np.uint8)
         ys, xs = np.nonzero(m)
-        if spec["h"] == "hip":                                      # quadril: faixa entre 50% e 62% da altura
+        if spec["h"] == "canvas":
+            gx = round((f["x0"] - 2) * sc)                          # posição do recorte na tela comum
+            if k == 0:
+                top = ys < ys.min() + (ys.max() - ys.min()) * 0.5
+                canvas_cx = xs[top].mean() + gx                      # tronco do 1º quadro no centro
+            cx = canvas_cx - gx
+        elif spec["h"] == "hip":                                      # quadril: faixa entre 50% e 62% da altura
             hb = (ys > ys.min() + (ys.max() - ys.min()) * .50) & (ys < ys.min() + (ys.max() - ys.min()) * .62)
             cx = xs[hb].mean() if hb.any() else xs.mean()
         elif spec["h"] == "torso":                                    # centro do tronco: o sabre não desloca o corpo
@@ -463,13 +511,15 @@ amap = {
     # 0 postura · 1 prepara · 2 recua o sabre | 3 avança · 4 golpe amplo | 5 extensão · 6 continuação · 7-8 volta
     # 0 postura · 1 prepara · 2 sabre erguido | 3 golpe | 4 recolhe · 6 abaixa · 7 postura
     # (o 5 da folha ergue o sabre de novo para um 2º golpe; fica de fora do golpe simples)
-    "attackW": [I("attack", k) for k in (0, 1, 2)], "attackH": [I("attack", 3)],
-    "attackR": [I("attack", k) for k in (4, 6, 7)],
-    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 3), "recovery": I("attack", 6),
+    # quadros separados: 0 postura · 1 prepara · 2 sabre no alto · 3 desce | 4 corte (lâmina
+    # inteira) | 5 continuação · 7 postura (o 6 ergue o sabre de novo: fica fora do golpe simples)
+    "attackW": [I("attack", k) for k in (0, 1, 2)], "attackH": [I("attack", k) for k in (3, 4)],
+    "attackR": [I("attack", k) for k in (5, 7)],
+    "windupA": I("attack", 1), "windup": I("attack", 2), "hitA": I("attack", 3), "hit": I("attack", 4), "recovery": I("attack", 5),
     "guardStart": I("attack", 0), "guard": I("attack", 0),
     "hurt": I("death", 0), "hurtB": I("death", 1), "stunA": I("death", 1), "stunB": I("death", 2),
     "dashA": I("run", 0), "dash": I("run", 3),
-    "castA": I("attack", 1), "cast": I("attack", 3), "castC": I("attack", 6),
+    "castA": I("attack", 1), "cast": I("attack", 4), "castC": I("attack", 5),
     "deathSeq": [I("death", k) for k in range(cnt("death"))],
     "deathA": I("death", 0), "deathB": I("death", 3), "deathC": I("death", cnt("death") - 1),
 }
@@ -485,7 +535,7 @@ layout = {"frameW": FW, "frameH": FH, "scale": GAME_SCALE, "hiRes": False, "foot
           "portrait": portrait, "fps": {k: ANIMS[k]["fps"] for k in ANIMS if ANIMS[k]["fps"]} | {"idlevar": 3},
           "anchors": [[80, 76]] * n, "torso": [[64, 80]] * n, "head": [[64, top + 12]] * n, "map": amap}
 
-KEY = "pirate-v3b"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
+KEY = "pirate-sep1"           # nome novo a cada mudança grande: o cache offline do jogo não serve a versão velha
 png = cv2.imencode(".png", cv2.cvtColor(sheet, cv2.COLOR_RGBA2BGRA))[1].tobytes()
 for d in OUT_DIRS:
     if not os.path.isdir(os.path.dirname(d)):
@@ -494,8 +544,8 @@ for d in OUT_DIRS:
     for name in [f"{KEY}-body.png"] + [f"{KEY}-t{t}-body.png" for t in range(5)]:
         open(os.path.join(d, name), "wb").write(png)
     json.dump(layout, open(os.path.join(d, f"{KEY}.json"), "w"), separators=(",", ":"))
-    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a") for e in ("-body.png", ".json")] + \
-               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a") for t in range(5)]:
+    for old in [f"pirate-{k}{e}" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b") for e in ("-body.png", ".json")] + \
+               [f"pirate-{k}-t{t}-body.png" for k in ("pack", "hd", "hd2", "hd3", "hd4", "hd5", "hd6", "hd7", "hd8", "px1", "v3a", "v3b") for t in range(5)]:
         if os.path.exists(os.path.join(d, old)):
             os.remove(os.path.join(d, old))
 json.dump({"cell": [FW, FH], "scale": GAME_SCALE, "footY": FOOT,

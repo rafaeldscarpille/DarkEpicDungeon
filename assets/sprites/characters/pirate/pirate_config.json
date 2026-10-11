@@ -107,7 +107,7 @@
    ]
   }
  },
- "gameSheet": "assets/pixel-art/characters/pirate-v3b-body.png",
+ "gameSheet": "assets/pixel-art/characters/pirate-sep1-body.png",
  "map": {
   "idle": [
    0,
@@ -150,18 +150,18 @@
    26
   ],
   "attackH": [
-   27
+   27,
+   28
   ],
   "attackR": [
-   28,
-   30,
+   29,
    31
   ],
   "windupA": 25,
   "windup": 26,
   "hitA": 27,
-  "hit": 27,
-  "recovery": 30,
+  "hit": 28,
+  "recovery": 29,
   "guardStart": 24,
   "guard": 24,
   "hurt": 32,
@@ -171,8 +171,8 @@
   "dashA": 16,
   "dash": 19,
   "castA": 25,
-  "cast": 27,
-  "castC": 30,
+  "cast": 28,
+  "castC": 29,
   "deathSeq": [
    32,
    33,
